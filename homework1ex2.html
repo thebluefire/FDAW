@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+</head>
+<body>
+
+    <div ng-app="app" ng-controller="myController">
+
+        <p>a: <input type="number" ng-model="a" /></p>
+        <p>b: <input type="number" ng-model="b" /></p>
+        <p>a + b: {{ summa() }}</p>
+        <p>a - b: {{ minus() }}</p>
+        <p>a * b: {{ mul() }}</p>
+        <p>a / b: {{ div() }}</p>
+
+    </div>
+
+
+    <script>
+    var app = angular.module('app', []);
+    app.controller('myController', function($scope) {
+	    $scope.a = 5;
+ 	    $scope.b = 4;
+        $scope.summa = function() {
+            return $scope.a + " + " + $scope.b + " = " + ($scope.a + $scope.b);
+        };
+        $scope.minus = function() {
+            return $scope.a + " - " + $scope.b + " = " + ($scope.a - $scope.b);
+        };
+        $scope.mul = function() {
+            return $scope.a + " * " + $scope.b + " = " + ($scope.a * $scope.b);
+        };
+        $scope.div = function() {
+            return $scope.a + " / " + $scope.b + " = " + ($scope.a / $scope.b);
+        };
+    });
+    </script>
+</body>
+</html>

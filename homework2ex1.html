@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Задание 1</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+</head>
+<body>
+
+    <div ng-app="myApp" ng-controller="myCtrl">
+        <p><b>Поиск по фамилии:</b> <input ng-model="x.firstName" type="text"></p>
+        <p ng-repeat="x in students | filter : {'firstName' : x.firstName}">{{x.firstName + " " + x.lastName + " | " + x.score}}</p>
+
+    </div>
+
+    <script>
+        var app = angular.module('myApp', []);
+        app.controller('myCtrl', function($scope) {
+            $scope.students = [
+    	        {"firstName" : "Abalina", "lastName" : "Victoria", "score" : 9},
+                {"firstName" : "Cherpici", "lastName" : "Cristian", "score" : 7},
+                {"firstName" : "Glavcev", "lastName" : "Gheorghi", "score" : 8},
+                {"firstName" : "Gariuc", "lastName" : "Ivan", "score" : 9},
+                {"firstName" : "Snegur", "lastName" : "Valeria", "score" : 10},
+                {"firstName" : "Ivanov", "lastName" : "Alexandr", "score" : 8},
+                {"firstName" : "Smigaliova", "lastName" : "Anastasia", "score" : 9}
+            ];
+        });
+    </script>
+
+</body>
+</html>

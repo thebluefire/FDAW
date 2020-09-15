@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+<body ng-app="myApp" ng-controller="myCtrl">
+
+    <p>Введите первое число: <input type="number" ng-model="numFirst"></p>
+    <p>Введите второе число: <input type="number" ng-model="numSec"></p>
+
+    <!--Если задано второе число - выводится результат умножения этих дву чисел-->
+    <p ng-if="numSec">{{numFirst}} * {{numSec}} = {{numFirst * numSec}}</p>
+
+    <!--Если задано только первое число - выводится таблица умножения на него-->
+    <div ng-if="!numSec">
+        <p>Таблица умножения на {{numFirst}}</p>
+        <p ng-repeat="x in numbers"> {{numFirst}} * {{x}} = {{numFirst * x}}</p>
+    </div>
+
+    <script>
+
+        var app = angular.module("myApp", []);
+        app.controller("myCtrl", function ($scope) {
+            $scope.numFirst = 1;
+            $scope.numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+        });
+
+    </script>
+
+</body>
+</html>

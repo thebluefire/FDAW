@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Задание 3</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+</head>
+
+<body>
+
+    <div ng-app="myApp" ng-controller="myCtrl">
+
+        <p>Введите текст, в котором будут строчные и заглавные буквы:</p>
+        <input type="text" ng-model="myText">
+        <p>Преобразованный текст:</p>
+        <p>{{myText | uppercase | limitTo : 1}}{{myText | limitTo : myText.length : 1| lowercase}}</p>
+
+    </div>
+
+    <script>
+        var app = angular.module('myApp', []);
+
+        app.controller('myCtrl', function ($scope) {
+        });
+    </script>
+
+</body>
+</html>
