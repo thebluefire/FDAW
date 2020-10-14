@@ -1,0 +1,290 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Почтовая подписка</title>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body ng-app="app" ng-controller="journals" style="overflow:scroll">
+
+	<div class="container mt-5">
+		<div class="d-flex justify-content-center" ng-hide="isLogged">
+			<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#loginModal">
+				Войти
+			</button>
+		</div>
+		<!-- directive: commentDirective -->
+		<div class="row mt-4" ng-show="isLogged">
+
+			<div class="col-md-9">
+
+				<div ng-show="tab == 'user'">
+					<h4>Ваши подписки: </h4>
+
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th>Название</th>
+								<th>Жанр</th>
+								<th>Цена</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr ng-repeat="x in journals | filter:isSelected | orderBy : 'price'">
+								<td>{{ x.title }}</td>
+								<td>{{ x.genre }}</td>
+								<td>{{ x.price }}</td>
+								<td><button class="btn btn-sm btn-primary" ng-click="changeSelected(x.title, false)">Удалить</button> </td>
+							</tr>
+						</tbody>
+						<tfoot>
+							<tr>
+								<th>Итого</th>
+								<th colspan="3" class="text-right">{{ post.totalSum(journals) }}</th>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+
+				<div ng-show="tab == 'redactor'">
+
+					<h4>Добавить газету: </h4>
+					<div class="form-inline">
+						<div class="form-group">
+							<div class="col-md-8">
+								<input class="form-control" ng-model="text" placeholder="Название" />
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="col-md-6">
+								<input type="text" class="form-control" ng-model="genre" placeholder="Жанр" />
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="col-md-6">
+								<input type="number" class="form-control" ng-model="price" placeholder="Цена" />
+							</div>
+						</div>
+
+						<div class="form-group">
+							<div class="col-md-offset-2 col-md-8">
+								<button class="btn btn-primary" ng-click="addItem(text, genre, price)">Добавить</button>
+							</div>
+						</div>
+					</div>
+					<br />
+				</div>
+
+				<div>
+					<h4>Все газеты</h4>
+					<div>
+						<p><input class="form-control" type="text" ng-model="search" placeholder="Поиск..." /></p>
+					</div>
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<th>Название</th>
+								<th>Жанр</th>
+								<th>Цена</th>
+								<th>Доступно</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody ng-show="tab == 'redactor'">
+							<tr ng-repeat="x in journals | filter:search">
+								<td>
+									<input class="form-control" ng-model="title" placeholder="{{x.title}}" />
+								</td>
+								<td>
+									<input type="text" class="form-control" ng-model="genre" placeholder="{{x.genre}}" />
+								</td>
+								<td>
+									<input type="number" class="form-control" ng-model="price" placeholder="{{x.price}}" />
+								</td>
+								<td><input type="checkbox" ng-model="x.avaliable" /></td>
+
+								<td><button class="btn btn-sm btn-outline-primary" ng-click="changeItem(x, title, genre, price)">Редактировать</button></td>
+								<td><button class="btn btn-sm btn-danger" ng-click="deleteItem(x)">X</button></td>
+							</tr>
+						</tbody>
+
+						<tbody ng-show="tab == 'user'">
+							<tr ng-repeat="x in journals | filter:search | filter:!isSelected">
+								<td>{{ x.title }}</td>
+								<td>{{ x.genre }}</td>
+								<td>{{ x.price }}</td>
+								<td> <span class="{{post.isAvaliablae(x).class}}">{{post.isAvaliablae(x).text}}</span></td>
+								<td><button class="btn btn-sm btn-primary" ng-click="changeSelected(x.title, true)" ng-disabled="post.isAvaliablae(x).aval">Добавить</button></td>
+							</tr>
+						</tbody>
+					</table>
+
+				</div>
+			</div>
+
+			<div class="col-md-3">
+				<div class="list-group row">
+					<a href="#" ng-click="tab='redactor'" class="list-group-item list-group-item-action {{ tab == 'redactor' ? 'active' : '' }}">Для редактора</a>
+					<a href="#" ng-click="tab='user'" class="list-group-item list-group-item-action {{ tab == 'user' ? 'active' : '' }}">Для пользователя</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="loginModal" tabindex="-1" role="dialog" ng-hide="isLogged" data-backdrop="false">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Вход</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="alert alert-danger" ng-show="loginError != ''">{{ loginError }}</div>
+					<form name="form" ng-submit="login()" role="form">
+						<div class="form-group">
+							<label for="username">Логин</label>
+							<i class="fa fa-key"></i>
+							<input type="text" name="username" id="username" class="form-control" ng-model="username" required/>
+						</div>
+						<div class="form-group">
+							<label for="password">Пароль</label>
+							<i class="fa fa-lock"></i>
+							<input type="password" name="password" id="password" class="form-control" ng-model="password" required/>
+						</div>
+						<div class="form-actions text-center">
+							<button type="submit" class="btn btn-primary">Войти</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+	
+	<script type="text/javascript">
+		var app = angular.module('app', []);
+		app.service('post', function() {
+            this.isAvaliablae = function(x) {
+				if (x.avaliable) {
+                    return { class: 'text-success font-weight-bold', text: "Есть в наличии", aval: false};
+				}
+                return { class: 'text-danger font-weight-bold', text: "Нет в наличии", aval: true };
+			}
+
+			this.totalSum = function(list) {
+				var sum = 0;
+				for (var i = 0; i < list.length; i++) {
+					if (list[i].selected) {
+                        sum += list[i].price;
+                    }			
+				}
+				return sum;
+			}
+
+		});
+
+        app.directive("commentDirective", function () {
+            return {
+                restrict: "M",
+                replace: true,
+                template: "<h1 ng-show=\"isLogged\">Добро пожаловать, {{ username }}</h1>"
+            };
+		});
+
+		app.controller('journals', function ($scope, post) {
+			$scope.isLogged = false;
+			$scope.loginError = '';
+			$scope.tab = 'user';
+			$scope.post = post;
+			$scope.login = function () {
+				if ($scope.username.trim() == '' || $scope.password.trim() == '') {
+					$scope.isLogged = false;
+					$scope.loginError = 'заполните все поля';
+				} 
+				if ($scope.username == "login" && $scope.password == "password") {
+					$scope.isLogged = true;
+					$scope.loginError = '';
+				}
+				else {
+					$scope.isLogged = false;
+					$scope.loginError = 'Login is login, password is password';
+				}
+			}
+			
+			$scope.journals = [{
+					title: "Правда",
+					genre: "Новостное издание",
+					price: 12.00,
+					avaliable: true,
+					selected: false
+				}, {
+					title: "Литература и искусство",
+					genre: "Новостное издание",
+					price: 10.00,
+					avaliable: true,
+					selected: false
+				}, {
+					title: "Аргументы и факты",
+					genre: "Новостное издание",
+					price: 12.00,
+					avaliable: true,
+					selected: false
+				}, {
+					title: "Юный натуралист",
+					genre: "Научно-популярный журнал",
+					price: 20.00,
+					avaliable: true,
+					selected: false
+				}, {
+					title: "Наука и техника",
+					genre: "Научно-популярный журнал",
+					price: 12.00,
+					avaliable: true,
+					selected: false
+				}
+			];
+
+            $scope.addItem = function (text,genre, price) {
+                price = parseFloat(price);
+				if (text != "" && !isNaN(price)) {
+					$scope.journals.push({ title: text, genre: genre, price: price, avaliable: true, selected: false });
+                }
+			}
+
+			$scope.changeItem = function (x, title, genre, price) {
+                if (title != "")
+					x.title = title;
+                if (genre != "")
+					x.genre = genre;
+				if (!isNaN(price))
+					x.price = price;
+			}
+
+			$scope.deleteItem = function (x) {
+                $scope.journals.splice($scope.journals.indexOf(x), 1);
+            }
+
+			$scope.isSelected = function(x) {
+				return x.selected;
+			}
+
+			$scope.changeSelected = function(title, state) {
+				for (var i = 0; i < $scope.journals.length; i++) {
+					if ($scope.journals[i].title == title) {
+						$scope.journals[i].selected = state;
+						break;
+					}
+				}
+			}
+		});
+	</script>
+</body>
+</html>
